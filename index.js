@@ -1,129 +1,194 @@
-//create an array with all the card information
-const cardArr = [
-  { id: 1, letter: "A" },
-  { id: 2, letter: "B" },
-  { id: 3, letter: "C" },
-  { id: 4, letter: "D" },
-  { id: 5, letter: "E" },
-  { id: 6, letter: "F" },
-  { id: 7, letter: "G" },
-  { id: 8, letter: "H" },
-  { id: 9, letter: "A" },
-  { id: 10, letter: "B" },
-  { id: 11, letter: "C" },
-  { id: 12, letter: "D" },
-  { id: 13, letter: "E" },
-  { id: 14, letter: "F" },
-  { id: 15, letter: "G" },
-  { id: 16, letter: "H" },
-];
+//random number generator
+function randomIndex(min, max) {
+  let arr = [];
+  while (arr.length < 16) {
+    let num = Math.floor(Math.random() * (max - min + 1)) + min;
+    if (arr.indexOf(num) === -1) {
+      arr.push(num);
+    }
+  }
 
-//create 16 divs(cards) inside container
-const container = document.querySelector(".container");
-
-for (let i = 0; i < 16; i++) {
-  //create card container
-  const cardContainer = document.createElement("div");
-  cardContainer.classList.add("card-container");
-
-  //create card, with front and back
-  const card = document.createElement("div");
-  card.classList.add("card");
-
-  const front = document.createElement("div");
-  front.classList.add("front");
-
-  const back = document.createElement("div");
-  back.classList.add("back");
-  back.innerText = cardArr[i].letter;
-
-  //back.innerText = "hshs";
-
-  //assign each card an id from the cardArr
-  const id = cardArr[i].id;
-  card.setAttribute("id", id);
-
-  cardContainer.appendChild(front);
-  cardContainer.appendChild(back);
-  card.appendChild(cardContainer);
-
-  container.appendChild(card);
+  return arr;
 }
 
-//loop through all cards and add event listener to each card
-let clickArr = [];
-let roundCount = 1;
+//create an array with all the card text
+const cardArr = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+];
 
-function round() {
+const container = document.querySelector(".container");
+
+function gameSetup(array) {
+  //create header div
+  const header = document.createElement("div");
+  header.classList.add("header");
+
+  header.innerHTML = `<div class="logo">Memory Game</div>
+                    <div class="score-board">
+                    <p>Score:</p>
+                    <p class="score"></p>
+                    </div>
+                    <button class="reset-btn">Reset</button>
+                    `;
+
+  //create cards div container
+  const cardsContainer = document.createElement("div");
+  cardsContainer.classList.add("cards");
+
+  //create 16 divs inside container
+  for (let i = 0; i < 16; i++) {
+    //create card container and card, with front and back
+    const cardContainer = document.createElement("div");
+    cardContainer.classList.add("card-container");
+
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    const front = document.createElement("div");
+    front.classList.add("front");
+
+    const back = document.createElement("div");
+    back.classList.add("back");
+
+    //get random index from index array
+    let index = array[i];
+
+    //assign letter from the cardArr to backdiv innerText, using index
+    back.innerText = cardArr[index];
+
+    //assign each card an id using i
+    card.setAttribute("id", i);
+
+    cardContainer.appendChild(front);
+    cardContainer.appendChild(back);
+
+    card.appendChild(cardContainer);
+    cardsContainer.appendChild(card);
+  }
+
+  container.appendChild(header);
+  container.appendChild(cardsContainer);
+}
+
+function Game() {
+  //loop through all cards and add event listener to each card
+  let clickArr = [];
+
+  //create score
+  let score = 0;
+  const scoreDiv = document.querySelector(".score");
+  scoreDiv.innerText = score;
+
+  //loop through all cards and add event listener
   const cards = document.querySelectorAll(".card");
+
   cards.forEach((card) => {
     card.addEventListener("click", (e) => {
-      e.preventDefault();
-      console.log(e.currentTarget);
-      if (clickArr.length >= 2) {
+      //if 2 or more divs are clicked at time return
+      if (clickArr.length === 2) {
         return;
       }
 
-      //get the card
+      //find the card's id and letter
       const card = e.currentTarget;
 
-      //get the clicked card's id
       const id = Number(card.id);
-      //find the card's letter in the array
-      const letter = cardArr[id - 1].letter;
+
+      const letter = card.querySelector(".back").innerText;
 
       //check if clicked card exists in array, if not add it
       const cardExists = clickArr.filter((arr) => arr[0] === id);
+
       if (cardExists.length === 0) {
         clickArr.push([id, letter]);
       }
 
+      //select card container and add flipped class to create flipped effect
       const cardContainer = card.querySelector(".card-container");
       cardContainer.classList.add("flipped");
 
-      //add back class to card and remove front class
-      //card.classList.add("flipped");
-      //card.classList.add("back");
-      //card.classList.remove("front");
-
-      //update the card with the letter
-      //card.innerText = letter;
-
-      //select all cards with the class back
-      const flippedCards = document.querySelectorAll(".flipped");
+      //if two cards are clicked, check if the letters match
+      //if the first card clicked is equal to the current letter, clear array
 
       if (clickArr.length === 2) {
         if (clickArr[0][1] == letter) {
-          console.log("same");
           clickArr = [];
+          //update score
+          scoreDiv.innerText = ++score;
         } else {
-          console.log("not");
-
+          //if cards'letters don't match, remove flipped class from the card container after 1 second
           setTimeout(() => {
-            const prevId = clickArr[0][0] - 1;
-            //cards[prevId].querySelector(".back").innerText = "";
-            //cards[prevId].classList.remove("back");
+            //select first card's id from the clickArr
+            const prevId = clickArr[0][0];
+
+            //remove flipped class from the first card
             cards[prevId]
               .querySelector(".card-container")
               .classList.remove("flipped");
-            //cards[prevId].classList.add("front");
-            //cards[id].innerText = "";
-            //back.innerText = "";
-            //card.classList.remove("back");
+
+            //remove flipped class from the current card
             cardContainer.classList.remove("flipped");
-            //card.classList.add("front");
+
+            //clear the clickArr to resume clicking
             clickArr = [];
-            /*flippedCards.forEach((card) => {
-              card.classList.remove("back");
-              card.classList.remove("flipped");
-              card.classList.add("front");
-            });*/
           }, 1000);
         }
       }
-      console.log(clickArr);
     });
+  });
+
+  //reset button
+
+  const resetBtn = document.querySelector(".reset-btn");
+  resetBtn.addEventListener("click", () => {
+    const scoreDiv = document.querySelector(".score");
+    scoreDiv.innerText = 0;
+
+    const cards = document.querySelectorAll(".card");
+
+    //loop through all cards
+    cards.forEach((card) => {
+      //remove flipped class to remove flip effect, leaving the cards face down
+      card.querySelector(".card-container").classList.remove("flipped");
+      //prevent clicking before reset
+      card.style.pointerEvents = "none";
+    });
+
+    //clear container after 1 second so that flip effect is visible when cards become face down
+    setTimeout(() => {
+      //clear container div
+      while (container.firstChild) {
+        container.firstChild.remove();
+      }
+
+      //create new random indexes array
+      let indexArr = randomIndex(0, 15);
+      //setup the game with new indexes
+      gameSetup(indexArr);
+      //restart game
+      Game();
+    }, 500);
   });
 }
 
-round();
+//create random indexes array
+let indexArr = randomIndex(0, 15);
+
+//setup and start game
+gameSetup(indexArr);
+Game();

@@ -1,15 +1,66 @@
+body {
+    padding: 0;
+    margin: 0;
+}
 .container {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    flex-direction: column;
+
+    background-color: whitesmoke;
+    
+}
+
+.header {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 75px;
+
+   
+    padding: 15px 0px;
+
+}
+
+.logo {
+    font-size: 2.3rem;
+    font-family:system-ui,'Helvetica Neue', sans-serif;
+}
+
+.score-board {
+    display: flex;
     gap: 5px;
-    padding: 200px;
+    font-size: 1.5rem;
+}
+
+.reset-btn {
+    font-size: 1.5rem;
+    font-family:system-ui,'Helvetica Neue', sans-serif;
+    background-color: black;
+    color: white;
+  
+    padding: 15px 30px;
+
+    border: none;
+}
+
+.reset-btn:hover {
+    background-color: #F45B69;
+    color: white;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 120px);
+
+    gap: 25px 50px;
 }
 
 .card {
     background-color: transparent;
-    width: 150px;
-    height: 250px;
-    
+    margin: 0;
     perspective: 800px;
 }
 
@@ -34,11 +85,19 @@
 }
 
 .front {
-    background-color: #bbb;
+    background-color: #32936F;
+    box-shadow: 1px 1px 5px black;
 }
 
 .back {
-    background-color: dodgerblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 5rem;
+
+    background-color: #FFBF00;
+    box-shadow: 1px 1px 5px black;
     transform: rotateY(180deg);
 }
 
